@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-	<string>com.infoweapons.launchd.adjkerntz</string>
+	<string>com.optim.launchd.adjkerntz</string>
 	<key>Program</key>
 	<string>/sbin/adjkerntz</string>
 	<key>ProgramArguments</key>

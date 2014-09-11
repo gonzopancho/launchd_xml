@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-	<string>com.infoweapons.launchd.save_entropy</string>
+	<string>com.optim.launchd.save_entropy</string>
 	<key>Program</key>
 	<string>/usr/libexec/save-entropy</string>
 	<key>UserName</key>

@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-	<string>com.infoweapons.launchd.periodic_daily</string>
+	<string>com.optim.launchd.periodic_daily</string>
 	<key>Program</key>
 	<string>/bin/sh</string>
 	<key>ProgramArguments</key>

@@ -1,3 +1,7 @@
+/* (C) 2014 by Optim Inc., Scott V. Kamp
+   outbackdingo@gmail.com
+ */
+
 /* (C) 2007 by InfoWeapons Inc., Paul Buetow
    pbuetow@infoweapons.com
    launchd@dev.buetow.org

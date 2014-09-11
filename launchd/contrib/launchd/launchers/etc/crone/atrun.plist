@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-	<string>com.infoweapons.launchd.atrun</string>
+	<string>com.optim.launchd.atrun</string>
 	<key>Program</key>
 	<string>/usr/libexec/atrun</string>
 	<key>StartInterval</key>

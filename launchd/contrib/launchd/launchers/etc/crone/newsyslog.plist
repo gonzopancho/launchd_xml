@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-	<string>com.infoweapons.launchd.newsyslog</string>
+	<string>com.optim.launchd.newsyslog</string>
 	<key>Program</key>
 	<string>/usr/sbin/newsyslog</string>
 	<key>StartCalendarInterval</key>

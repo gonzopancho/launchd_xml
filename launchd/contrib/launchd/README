@@ -30,7 +30,7 @@ LAUNCHD
     <plist version="1.0">
     <dict>
         <key>Label</key>
-        <string>com.infoweapons.launchd.sshd</string>
+        <string>com.optim.launchd.sshd</string>
         <key>Program</key>
         <string>/usr/sbin/sshd</string>
         <key>ProgramArguments</key>

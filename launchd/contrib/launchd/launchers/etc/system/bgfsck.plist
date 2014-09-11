@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-	<string>com.infoweapons.launchd.bgfsck</string>
+	<string>com.optim.launchd.bgfsck</string>
 	<key>Program</key>
 	<string>/sbin/fsck</string>
 	<key>ProgramArguments</key>
