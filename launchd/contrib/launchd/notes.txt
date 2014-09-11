@@ -1,0 +1,635 @@
+IPC.c
+  - IPC routines for the System starter
+  functions:
+	startupItemTerminated()
+	MonitorStartupItem()
+	itemFromIPCMessage()
+	consoleMessage()
+	statusMessage()
+	queryConfigSetting()
+	handleIPCMessage()
+	getIPCPort()
+	CreateIPCRunLoopSource()
+  
+IPC.h
+  - Function prototypes for the IPC routines
+
+StartupItemContext.c
+  - 
+  functions:
+	main()
+
+StartupItems.c
+  - startup item management routine
+  functions:
+	argumentForAction()
+	checkTypeOfValue()
+	StartupItemValidate()
+	RemoveItemFromWaitingList()
+	AddItemToFailedList()
+	startupItemListGetMatches()
+	SpecialCasesStartupItemHandler()
+	StartupItemListCountServices()
+	StartupItemSecurityCheck()
+	StartupItemListCreateWithMask()
+	StartupItemListGetProvider()
+	StartupItemListGetRunning()
+	appendDependents()
+	StartupItemListCreateDependentsList()
+	countUnmetRequirements()
+	countDependantsPresent()
+	pendingAntecedents()
+	checkForDuplicates()
+	StartupItemListGetNext()
+	StartupItemGetDescription()
+	StartupItemGetPID
+	StartupItemWithPID()
+	StartupItemRun()
+	StartupItemSetStatus()
+	StartupItemExit()
+
+StartupItems.h
+  - 
+
+SystemStarter.c
+  - main file for System Starter
+  functions:
+	main()
+	checkForActivity()
+	displayErrorMessages()
+	system_starter()
+	CF_syslog()
+	usage()
+	doCFnote
+
+
+SystemStarter.h
+  - structure definitions for System Starter
+  structures:
+	StartupContextStorage -> StartupContext
+  enum
+	Action
+
+SystemStarterIPC.h
+  - System starter IPC definitions
+  structures:
+	SystemStarterIPCMessage . SystemStarterIPCMessage
+	
+
+bootstrap.defs
+  - Mig interface definition for bootstrap
+
+bports.c
+  - 
+  function:
+	main()
+
+init.c
+  - modified init from FreeBSD
+  functions:
+	init_boot()
+         * called by pid1_magic_init()
+         - examines/sets the flags single_user_mode(s),verbose(v),
+           safe-mode(x) 
+
+	init_pre_kevent()
+         - if (single user and root)
+
+	stall()
+	getsecuritylevel()
+	setsecuritylevel()
+	setctty()
+	single_user()
+	single_user_callback()
+	runcom()
+	runcom_callback()
+	construct_argv()
+	free_command()
+	session_free()
+	setup_command()
+	setupargv()
+	session_new()
+	session_launch()
+          - 
+
+	session_callback()
+	session_reap()
+	update_ttys()
+	catatonia()
+
+launch.h
+  - 
+  enum:
+	launch_data_type_t
+
+
+launch_priv.h
+  - 
+
+launchctl.c
+  -
+  functions:
+	main()
+	demux_cmd()
+          - invokes the corresponding function for the subcommand
+
+	unsetenv_cmd()
+	setenv_cmd()
+	print_launchd_env()
+	print_key_value()
+	getenv_and_export_cmd()
+	unloadjob()
+	read_plist_file()
+	delay_to_second_pass2()
+	delay_to_second_pass()
+	readfile()
+	readpath()
+	distill_config_file()
+	sock_dict_cb()
+	sock_dict_edit_entry()
+	do_mgroup_join()
+	do_rendezvous_magic()
+	CreateMyPropertyListFromFile()
+	WriteMyPropertyListToFile()
+	myCFDictionaryApplyFunction()
+	CF2launch_data()
+	help_cmd()
+	exit_cmd()
+	_fd()
+	load_and_unload_cmd()
+	submit_job_pass()
+	start_stop_remove_cmd()
+	print_jobs()
+	list_cmd()
+	stdio_cmd()
+	fyi_cmd()
+	logupdate_cmd()
+	name2num()
+	num2name()
+	lim2str()
+	str2lim()
+	limit_cmd()
+	umask_cmd()
+	submit_cmd()
+	getrusage_cmd()
+	launch_data_array_append()
+
+launchd.c
+  - 
+  functions:
+	main()
+         * if running as pid 1:
+            - call workaround3048875()
+               * convert argv[1] to vector array
+                  see workaround3048875
+         * if not running as pid 1:
+            - close all open file descriptors except stdout, stdin, stderr
+            - set default behavior of all process signals (SIG_DFL)
+            - unblock all signals
+         * test opening of stdin, stdout, stderr
+         * get passed arguments (see Invokation below)
+         * if session user is specified(-S user):
+             - change to that user by setuid()
+             - change to the group by setgid()
+         * if option d flag is set:
+             - daemonize()
+         * set syslog settings
+            if pid 1: log to /dev/console
+            else    : log to stderr and syslog with PID
+         * create two kernel events queues: mainkq, asynckq
+         * registers the callback for READ events to the asynckq
+         * registers callbacks for signals
+        ?? calls mach_init_init - not in current code of FreeBSD launchd 
+                                   obviously
+      TBV* if session type is set as tty:
+             - so a shell process is started
+         * set the PATH environment variable
+         * if  pid 1: invoke pid1_magic_init()
+         * if not pid 1: invoke ipc_server_init()
+         *
+
+	pid1_magic_init()
+	usage()
+	kevent_mod()
+	_fd()
+	pid1waitpid()
+	launchd_shutdown()
+	launchd_single_user()
+	signal_callback()
+          :signal handler for kevents
+          * if HUP: if pid 1, invoke update_ttys()
+                    call reload_launchd_config()
+          * if TERM: call launchd_shutdown()
+          * if SIGCHLD (?)
+
+	fs_callback()
+	readcfg_callback()
+	reload_launchd_config()
+          - 
+
+	conceive_firstborn()
+	loopback_setup()
+          - sets up the loopback interface
+
+	workaround3048875()
+          - for passed arguments treated as 1 long string in argv[1] are
+            converted to a vector array starting in argv[1]
+             e.g.
+                argv[1] = "-S session -U john -d"
+             to argv[1] = "-S"
+                argv[2] = "session"
+                argv[3] = "-U"
+                argv[4] = "john"
+                argv[5] = "-d"
+
+	launchd_SessionCreate()
+	async_callback()
+	testfd_or_openfd()
+	launchd_setstdio()
+	batch_job_enable()
+
+launchd.h
+  - function prototype definitions
+     for launchd.c
+
+launchd_core_logic.c
+  - 
+  functions:
+	job_get_integer()
+	job_get_string()
+	job_get_bool()
+	simple_zombie_reaper()
+	job_ignore()
+	job_watch()
+	job_stop()
+	job_export()
+	job_remove_all2()
+	job_remove_all()
+	job_remove()
+	socketgroup_setup()
+	job_new_via_mach_init()
+	job_import()
+	job_find2()
+	job_find()
+	job_export_all2()
+	job_export_all()
+	job_reap()
+	job_dispatch()
+	job_callback()
+	job_start()
+	job_start_child()
+	job_setup_env_from_other_jobs()
+	job_setup_attributes()
+	dir_has_files()
+	calendarinterval_setalarm()
+	job_log_error()
+	job_log()
+	watchpath_new()
+	watchpath_delete()
+	watchpath_ignore()
+	watchpath_watch()
+	watchpath_callback()
+	calendarinterval_new()
+	calendarinterval_delete()
+	calendarinterval_callback()
+	socketgroup_new()
+	socketgroup_delete()
+	socketgroup_ignore()
+	socketgroup_watch()
+	socketgroup_callback()
+	envitem_new()
+	envitem_delete()
+	envitem_setup()
+	limititem_update()
+	limititem_delete()
+	limititem_setup()
+	job_useless()
+	job_ondemand()
+	job_prog()
+	job_active()
+          - 
+
+	launchd_fork()
+          - fork with root bootstrap port
+
+	launchd_ws_fork()
+          - fork with ws(?) bootstrap port
+
+	fork_with_bootstrap_port()
+         - fork with the specified bootstrap port
+          * blcok signals
+          * check validity of port
+          * fork
+          * for parent process:
+             * set bootstrap port to NULL
+          * for child process:
+             * set default signal behaviors
+	  * unblock signals
+
+	machservice_new()
+	bootstrap_callback()
+	bootstrap_rport()
+	bootstrap_rparent()
+	bootstrap_foreach_service()
+	bootstrap_new()
+	bootstrap_delete_anything_with_port()
+	bootstrap_lookup_service()
+	machservice_port()
+	machservice_job()
+	machservice_active()
+	machservice_name()
+	machservice_bootstrap()
+	machservice_delete()
+	machservice_watch()
+	bootstrap_delete()
+	job_reap_pid_with_bs()
+	job_reap_pid()
+	mach_cmd2argv()
+	job_checkin()
+	job_ack_port_destruction()
+	job_ack_no_senders()
+	job_get_priv_port()
+
+launchd_core_logic.h
+  - function prototype definitions for launchd_core_logic.c
+
+launchd_mach_ipc.c
+  - functions:
+	mport_callback()
+	mach_init_init()
+	mach_init_reap()
+	init_ports()
+	demand_loop()
+	launchd_mach_ipc_demux()
+	canReceive()
+	launchd_set_bport()
+	launchd_get_bport()
+	launchd_mport_notify_req()
+	launchd_mport_watch()
+	launchd_mport_ignore()
+	launchd_mport_make_send()
+	launchd_mport_close_recv()
+	launchd_mport_create_recv()
+	launchd_mport_deallocate()
+	x_bootstrap_create_server()
+	x_bootstrap_unprivileged()
+	x_bootstrap_check_in()
+	x_bootstrap_look_up()
+	x_bootstrap_look_u_array()
+	x_bootstrap_parent()
+	x_bootstrap_status()
+	x_bootstrap_info_countservices()
+	x_bootstrap_info_copyservices()
+	x_bootstrap_info()
+	x_bootstrap_subset()
+	x_bootstrap_create_service()
+	do_mach_notify_port_destroyed()
+	do_mach_notify_port_deleted()
+	do_mach_notify_no_senders()
+	do_mach_notify_send_once()
+	do_mach_notify_dead_name()
+
+launchd_unix_ipc.c
+  functions:
+	ipc_clean_up()
+	ipc_server_init()
+	ipc_open()
+	ipc_listen_callback()
+	ipc_callback()
+	set_user_env()
+	ipc_close_fds()
+	ipc_revoke_fds()
+	ipc_readmsg()
+	ipc_readmsg2()
+	ipc_close()
+	adjust_rlimits()
+
+launchd_unix_ipc.h
+  - definitions 
+  structures:
+	conncb
+
+
+launchproxy.c
+  - 
+  functions:
+	find_fds()
+	main()
+
+
+liblaunch.c
+  - structure definitions
+  - utility functions for the data structures of launchd
+
+  structures:
+	_launch_data
+	_launch
+	_launch_client
+  functions:
+	launch_client_init()
+          - 
+
+	launch_data_alloc()
+          - allocates launch_data of specified type
+
+	launch_data_get_type()
+          - returns the launch_data type
+
+	launch_data_free()
+          - frees the launch_data checking on the type
+
+	launch_data_dict_get_count()
+          - gets the count for dictionary type items
+            (array count is divided by two because dictionaries consist of 
+              a pair of strings)
+
+	launch_data_dict_insert()
+          - 
+
+	launch_data_dict_lookup()
+	launch_data_dict_remove()
+	launch_data_dict_iterate()
+	launch_data_array_set_index()
+	launch_data_array_get_index()
+	launch_data_array_pop_first()
+	launch_data_array_get_count()
+	launch_data_set_errno()
+	launch_data_set_fd()
+	launch_data_set_integer()
+	launch_data_set_bool()
+	launch_data_set_real()
+	launch_data_set_string()
+	launch_data_set_opaque()
+	launch_data_get_errno()
+	launch_data_get_fd()
+	launch_data_get_integer()
+	launch_data_get_bool()
+	launch_data_get_real()
+	launch_data_get_string()
+	launch_data_get_opaque()
+	launch_data_get_opaque_size()
+        launchd_getfd()
+	launchd_fdopen()
+	launchd_close()
+	make_msg_and_cmsg()
+	make_data()
+	launchd_msg_send()
+	launch_get_fd()
+	launch_msg_getmsgs()
+	launchd_msg_recv()
+	launch_data_copy()
+	launchd_batch_enable()
+	launchd_batch_query()
+	_fd()
+	launch_data_new_errno()
+	launch_data_new_fd()
+	launch_data_new_integer()
+	launch_data_new_bool()
+	launch_data_new_real()
+	launch_data_new_string()
+	launch_data_new_opaque()
+
+rc
+rc.common
+rc.netboot
+rc.shutdown
+register_mach_bootstrap_servers.c
+  - 
+  functions:
+	main()
+	handleConfigFile()
+	regServ()
+	CreateMyPropertyListFromFile()
+
+service
+  - 
+
+
+wait4path.c
+  - kevent filter EVFILT_FS is currently not documented in man
+  * waits for a fs to be mounted
+    http://lists.freebsd.org/pipermail/cvs-src/2004-July/026665.html
+
+-------------------------------------------------------------------------------
+
+LaunchD 
+  - still uses the rc scripts from BSD but with the additional property list
+     format of Apple to contain the information similar to what is needed by
+     rcorder in *BSD.
+
+  - attempts to replace init(*NIX)/System Starter(MacOS).
+
+Invokation:
+  - as pid 1 or equivalent to the process init:
+     s - single user
+     v - verbose boot
+     x - safe mode
+  - as root but not pid 1
+     S - specify the session type
+     U - specify the user
+     d - daemonize
+     h - help
+  - as normal user
+     d - daemonize
+     h - help
+
+  note: options for session type(S) and user(U) must be supplied together
+
+
+Programs:
+ (1) System Starter
+ (2) bports
+ (3) launchd
+ (4) launchctl
+ (5) launchproxy
+ (6) register_mach_bootstrap_servers
+ (7) wait4path
+
+MacOS Libraries used:
+ - CoreFoundation
+ - Authorization Services
+   * framework - Security
+
+XML configuration
+  - completed parser source coding.
+    * used libexpat
+    * implemented using stack
+
+launchd as
+(a) manual launcher - like /etc/rc.d/*
+    :done
+
+(b) cron replacement
+    - cannot support range(?)
+     e.g. minute = 1-31
+
+
+Running:
+  - requires launchctl to be in "/sbin/"
+    * will have to fix this
+
+ Non-pid 1 && non-root:
+  $ launchd [-d] [-h]
+       -d   =  daemon
+       -h   =  help(usage)
+
+    - calls /sbin/launchctl which loads the config file ~/.launchd.conf
+      * launchd.conf contains the commands to execute
+      e.g.
+         load launchers     => load all plists in subdirectory 
+                                 "launchers"
+
+    * To manually connect to the running launchd, the environment variable
+       LAUNCHD_SOCKET to "/tmp/launchd-nnnn.XXXXX"
+          where nnnn is the process ID of the instance of launchd running
+                XXXX is random
+             *process ID is enough to make it unique
+     e.g.
+       $ launchd -d
+       $ ps -Af | grep launchd
+         ...
+         9435  p1  Is+    0:00.07 bash
+         ...
+       $ setenv LAUNCHD_SOCKET /tmp/launchd-9435.XXXXX/sock
+         // where XXXXX is random but pid is enough
+       $ launchctl list
+         
+
+Init:
+  - debugging output from the functions warning, stall is dumped in
+     console only after the call to openlog().
+   * cause: launchd is compiled with dynamic libraries expat/util
+     solution: compile with static libraries
+       gcc -static ...
+
+  - the root element for the job list is undefined.
+   * 
+
+  - filesystem specific to OS X fdesc cannot be mounted
+   * comment out and replace with mounting of devfs
+      see init.c:mount_devfs()
+
+  - clean_ttys() needs to be replaced with update_ttys()
+   * this is for launching getty's for the consoles
+
+  - after rc, no session is launched (deep bug)
+   * kevent_mod which registers kevent has PID1_REAP_ADOPTED_CHILDREN ignore
+      registration for runcom_callback()
+    - needs an explanation for macro guards(?)
+
+Current bugs:
+(1) connecting to launchd pid 1
+    * solved
+(2) sending the signal HUP message does not kill the running daemons
+
+
+Reboot/halt:
+  - flush file system cache to disk
+  - send all running processes a SIGTERM, then a SIGKILL
+
+Shutdown:
+  - if -o is not specified, informs init of the operation
+        doreboot ? SIGINT :	/* reboot */
+	dohalt ? SIGUSR1 :	/* halt */
+	dopower ? SIGUSR2 :	/* power-down */
+	          SIGTERM);	/* single-user */

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.infoweapons.launchd.bgfsck</string>
+	<key>Program</key>
+	<string>/sbin/fsck</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>-B</string>
+		<string>-p</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>nice</key>
+	<integer>-4</integer>
+</dict>
+</plist>

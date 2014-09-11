@@ -1,0 +1,340 @@
+.\"  -*- nroff -*-
+.\"
+.\" Copyright (c) 2006 Infoweapons Corporation    Cebu, Philippines
+.\"                    All rights reserved
+.\"
+.\" Copyright (c) 2005 R. Tyler Ballance <tyler@tamu.edu> All rights reserved.
+.\"
+.\" Copyright (c) 2005 Apple Computer, Inc. All rights reserved.
+.\"
+.\" @APPLE_LICENSE_HEADER_START@
+.\"
+.\" This file contains Original Code and/or Modifications of Original Code
+.\" as defined in and that are subject to the Apple Public Source License
+.\" Version 2.0 (the 'License'). You may not use this file except in
+.\" compliance with the License. Please obtain a copy of the License at
+.\" http://www.opensource.apple.com/apsl/ and read it before using this
+.\" file.
+.\"
+.\" The Original Code and all software distributed under the License are
+.\" distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+.\" EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+.\" INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+.\" FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
+.\" Please see the License for the specific language governing rights and
+.\" limitations under the License.
+.\"
+.\" @APPLE_LICENSE_HEADER_END@
+
+.Dd July 10, 2006
+.Dt launchd.plist 5
+.Os
+.Sh NAME
+.Nm launchd.plist
+.Nd System wide and per-user daemon/agent configuration files
+.Sh DESCRIPTION
+This document details the parameters that can be given to an XML property
+list that can be loaded into launchd with launchctl.
+.Sh EXPECTATIONS
+Daemons or agents managed by launchd are expected to behave certain ways.
+.Pp
+A daemon or agent launched by launchd MUST NOT do the following in the
+process directly launched by launchd:
+.Bd -literal
+           oo   fork(2) and have the parent process exit(3) or _exit(2).
+           oo   Call daemon(3)
+
+     A daemon or agent launched by launchd SHOULD NOT do the following as a
+     part of their startup initialization:
+
+           oo   Setup the user ID or group ID.
+           oo   Setup the working directory.
+           oo   chroot(2)
+           oo   setsid(2)
+           oo   Close "stray" file descriptors.
+           oo   Change stdio(3) to /dev/null.
+           oo   Setup resource limits with setrusage(2).
+           oo   Setup priority with setpriority(2).
+           oo   Ignore the SIGTERM signal.
+
+     A daemon or agent launched by launchd SHOULD:
+
+           oo   Launch on demand given criteria specified in the XML property
+               list.  More information can be found in launch(3).
+           oo   Catch the SIGTERM signal.
+.Ed
+.Sh XML PROPERTY LIST KEYS
+.Bd -literal
+     The follow keys can be used to describe the configuration details of your
+     daemon or agent.  Property lists files are expected to have their name
+     end in ".plist" but that is not strictly required.
+
+     Label <string>
+     This required key uniquely identifies the job to launchd.
+
+     Disabled <boolean>
+     This optional key is used to disable your job. The default is false.
+
+     UserName <string>
+     This optional key specifies the user to run the job as. The default is
+     the user who submitted the job to launchd.
+
+     GroupName <string>
+     This optional key specifies the user to run the job as. The default is
+     the group of the user who submitted the job to launchd.
+
+     inetdCompatibility <dictionary>
+     The presence of this key specifies that the daemon expects to be run as
+     if it were launched from inetd(8).  This flag is incompatible with the
+     ServiceIPC key.
+
+           Wait <boolean>
+           This flag corresponds to the "wait" or "nowait" option of inetd(8).
+
+     ProgramArguments <array of strings>
+     This required key maps to the second argument of execvp(3).
+
+     Program <string>
+     This optional key maps to the first argument of execvp(3).  If this key
+     is missing, then the first element of the array of strings provided to
+     the ProgramArguments will be used instead.
+
+     OnDemand <boolean>
+     This optional key is used to control whether your job is launched based
+     on demand or to be kept continuously running. The default is true.
+
+     RunAtLoad <boolean>
+     This optional key is used to control whether your job is launched once at
+     the time the job is loaded. The default is false.
+
+     RootDirectory <string>
+     This optional key is used to specific a directory to chroot(2) to before
+     running the job.
+
+     WorkingDirectory <string>
+     This optional key is used to specific a directory to chdir(2) to before
+     running the job.
+
+     ServiceDescription <string>
+     This optional key is used to specify a human readable description of the
+     purpose of the job.
+
+     EnvironmentVariables <dictionary of strings>
+     This optional key is used to specify additional environmental variables
+     to be setup before running the job.
+
+     Umask <integer>
+     This optional key specifies what value should be passed to umask(2)
+     before running the job.
+
+     ServiceIPC <boolean>
+     This optional key specifies whether the job participates in advanced 
+     communication with launchd.  The default is false. This flag is 
+     incompatible with the inetdCompatibility key.
+
+     TimeOut <integer>
+     The recommended time out to pass to the job. If no value is specified, a
+     default time out will be supplied by launchd for use by the job at check
+     in time.
+
+     InitGroups <boolean>
+     This optional key specifies whether the job should have initgroups(3) be
+     called before running the job.  The default is false.
+
+     WatchPaths <array of strings>
+     This optional key causes the job to be started if any one of the listed
+     paths are modified.
+
+     QueueDirectories <array of strings>
+     Much like the WatchPaths option, this key will watch the paths for 
+     modifications. The difference being that the job will only be started if
+     the path is a directory and the directory is not empty.
+
+     StartInterval <integer>
+     This optional key causes the job to be started every N seconds.  If the
+     system is asleep, the job will be started the next time the computer
+     wakes up.  If multiple intervals transpire before the computer is woken,
+     those events will be coalesced into one event upon wake from sleep.
+
+     StartCalendarInterval <dictionary of integers>
+     This optional key causes the job to be started every calendar interval as
+     specified. Missing arguments are considered to be wildcard. The semantics
+     are much like crontab(5).  Unlike cron which skips job invocations when
+     the computer is asleep, launchd will start the job the next time the 
+     computer wakes up.  If multiple intervals transpire before the computer is
+     woken, those events will be coalesced into one event upon wake from
+     sleep.
+
+           Minute <integer>
+           The minute on which this job will be run.
+
+           Hour <integer>
+           The hour on which this job will be run.
+
+           Day <integer>
+           The day on which this job will be run.
+
+           Weekday <integer>
+           The weekday on which this job will be run (0 and 7 are Sunday).
+
+           Month <integer>
+           The month on which this job will be run.
+
+     StandardOutPath <string>
+     This optional key specifies what file should be used for data being sent
+     to stdout when using stdio(3).
+
+     StandardErrorPath <string>
+     This optional key specifies what file should be used for data being sent
+     to stderr when using stdio(3).
+
+     Debug <boolean>
+     This optional key specifies that launchd should adjust its log mask
+     temporarily to LOG_DEBUG while dealing with this job.
+
+     SoftResourceLimits <dictionary of integers>
+
+     HardResourceLimits <dictionary of integers>
+     Resource limits to be imposed on the job. These adjust variables set with
+     setrlimit(2).  The following keys apply:
+
+           Core <integer>
+           The largest size (in bytes) core file that may be created.
+
+           CPU <integer>
+           The maximum amount of cpu time (in seconds) to be used by each
+           process.
+
+           Data <integer>
+           The maximum size (in bytes) of the data segment for a process; this
+           defines how far a program may extend its break with the sbrk(2)
+           system call.
+
+           FileSize <integer>
+           The largest size (in bytes) file that may be created.
+
+           MemoryLock <integer>
+           The maximum size (in bytes) which a process may lock into memory
+           using the mlock(2) function.
+
+           NumberOfFiles <integer>
+           The maximum number of open files for this process.
+
+           NumberOfProcesses <integer>
+           The maximum number of simultaneous processes for this user id.
+
+           ResidentSetSize <integer>
+           The maximum size (in bytes) to which a process's resident set size
+           may grow.  This imposes a limit on the amount of physical memory to
+           be given to a process; if memory is tight, the system will prefer
+           to take memory from processes that are exceeding their declared
+           resident set size.
+
+           Stack <integer>
+           The maximum size (in bytes) of the stack segment for a process;
+           this defines how far a program's stack segment may be extended.
+           Stack extension is performed automatically by the system.
+
+     Nice <integer>
+     This optional key specifies what nice(3) value should be applied to the
+     daemon.
+
+     LowPriorityIO <boolean>
+     This optional key specifies whether the kernel should consider this daemon
+     mon to be low priority when doing file system I/O.
+
+     Sockets <dictionary of dictionaries... OR dictionary of array of
+     dictionaries...>
+     This optional key is used to specify launch on demand sockets that can be
+     used to let launchd know when to run the job. The job can check-in and
+     get a copy of the file descriptors using APIs outlined in launch(3).  The
+     keys of the top level Sockets dictionary can be anything. They are meant
+     for the application developer to use to differentiate different which
+     descriptors correspond to which application level protocols (e.g. http
+     vs. ftp vs. DNS...).  At check in time, the value of each Sockets 
+     dictionary key will be an array of descriptors. Daemon/Agent writers
+     should consider all descriptors of a given key to be to be effectively 
+     equivalent, even though each file descriptor likely represents a 
+     different networking protocol which conforms to the criteria specified in
+     the job configuration file.
+
+     The paramters below are used as inputs to call getaddrinfo(3).
+
+           SockType <string>
+           This optional key tells launchctl what type of socket to create.
+           The default is "stream" and other valid values for this key are
+           "dgram" and "seqpacket" respectively.
+
+           SockPassive <boolean>
+           This optional key specifies whether listen(2) or connect(2) should
+           be called on the created file descriptor. The default is true ("to
+           listen").
+
+           SockNodeName <string>
+           This optional key specifies the node to connect(2) or bind(2) to.
+
+           SockServiceName <string>
+           This optional key specifies the service on the node to connect(2)
+           or bind(2) to.
+
+           SockFamily <string>
+           This optional key can be used to specifically request that "IPv4"
+           or "IPv6" socket(s) be created.
+
+           SockProtocol <string>
+           This optional key specifies the protocol to be passed to socket(2).
+           The only value understood by this key at the moment is "TCP".
+
+           SockPathName <string>
+           This optional key implies SockFamily is set to "Unix". It specifies
+           the path to connect(2) or bind(2) to.
+
+           Bonjour <boolean or string or array of strings>
+           This optional key can be used to request that the service be 
+           registered with the mDNSResponder(8).  If the value is boolean, 
+           the service name is inferred from the SockServiceName.
+
+           MulticastGroup <string>
+           This optional key can be used to request that the datagram socket
+           join a multicast group.  If the value is a hostname, then
+           getaddrinfo(3) will be used to join the correct multicast address
+           for a given socket family.  If an explicit IPv4 or IPv6 address is
+           given, it is required that the SockFamily family also be set, 
+           otherwise the results are undefined.
+.Ed
+.Sh EXAMPLE XML PROPERTY LISTS
+The following XML Property List simply keeps "exampled" running continuously:
+.Bd -literal
+           <?xml version="1.0" encoding="UTF-8"?>
+           <!DOCTYPE plist PUBLIC -//Apple Computer//DTD PLIST 1.0//EN
+           http://www.apple.com/DTDs/PropertyList-1.0.dtd >
+           <plist version="1.0">
+           <dict>
+                <key>Label</key>
+                <string>com.example.exampled</string>
+                <key>ProgramArguments</key>
+                <array>
+                     <string>exampled</string>
+                </array>
+                <key>OnDemand</key>
+                <false/>
+           </dict>
+           </plist>
+.Ed 
+.Sh FILES
+.Bl -tag -width Ds
+.It Pa ~/Library/LaunchAgents
+Per-user agents provided by the user.
+.It Pa /Library/LaunchAgents
+Per-user agents provided by the administrator.
+.It Pa /Library/LaunchDaemons
+System wide daemons provided by the administrator.
+.It Pa /System/Library/LaunchAgents
+Mac OS X Per-user agents.
+.It Pa /System/Library/LaunchDaemons
+Mac OS X System wide daemons.
+
+.Sh SEE ALSO
+.Xr launchctl 1 ,
+.Xr launch 3 ,
+.Xr launchd 8

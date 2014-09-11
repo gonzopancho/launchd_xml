@@ -1,0 +1,16 @@
+05/08/06
+
+(1) Single-file multiple entry for plist
+    - XML plist parser must be capable to support multiple entries in
+      a single plist file
+      * proposed by sho
+
+(2) Process groups
+    - mechanism to group processes and set/unset properties as a group
+    - also to perform start/restart/shutdown with a specified sequence
+     * proposed by sho
+
+(3) Custom logging
+    - settable filters on process logging esp. in (2)
+     * proposed by sho
+

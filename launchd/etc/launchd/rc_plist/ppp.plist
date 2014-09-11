@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>launchd.ppp</string>
+	<key>Program</key>
+	<string>/usr/sbin/ppp</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/sbin/ppp</string>
+		<string>-nat</string>
+		<string>-foreground</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>Disabled</key>
+	<true/>
+</dict>
+</plist>

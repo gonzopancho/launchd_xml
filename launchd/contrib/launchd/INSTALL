@@ -1,0 +1,34 @@
+Launchd Port to FreeBSD
+
+Compilation/Installation:
+
+For the launchd daemon:
+$ cd launchd && make
+# cp launchd /sbin
+
+For the command line interface launchctl:
+$ cd launchctl && make
+# cp launchctl /sbin
+
+To replace init with launchd (pid 1 - Eve(mother of all processes)):
+(1) Edit /boot/loader.conf
+(2) Add the line:
+ 
+         init_path="/sbin/launchd"
+
+    Note: This will override the setting in /boot/defaults/loader.conf for the path to init.
+
+(3) Add launchd.plist-conformant configuration files in /etc.
+
+    system processes     -   /etc/launchd/system/
+    userspace proceses   -   /etc/launchd/user/
+    cron tasks           -   /etc/launchd/crone/
+
+    Note: for plist format, see launchd.plist.man 
+
+
+See README for usage of launchd.
+
+Enjoy!
+
+@jmp@ 

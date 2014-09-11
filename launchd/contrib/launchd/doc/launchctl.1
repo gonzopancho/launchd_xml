@@ -1,0 +1,183 @@
+.\"
+.TH launchctl 1 "July 25, 2006" "laumchctl"
+
+.SH NAME
+launchctl - Control program for launchd
+
+
+.SH SYNOPSIS
+.B launchctl
+.RI [ "subcommand" 
+.RI [ "arguments ..."]]
+.P
+
+.SH DESCRIPTION
+
+\fBLaunchctl\fP is the accompanying control program for \fBlaunchd\fP which allows for a higher level of user interaction. Launchctl 
+allows users to start, stop or restart individual jobs without affecting others, set resource limits for future jobs and add 
+individual jobs to the system without causing any interruptions to other existing services. 
+
+\fBLaunchtcl\fP accepts command line arguments. Users can specify individual job files, or directories containing job files to launchctl's load 
+and unload subcommands. Launchctl will read commands from standard input if no command line arguments are given. A command prompt is available 
+if standard input is a terminal.
+
+.SH SUBCOMMANDS
+
+.B load 
+.RI [ "-w" ] 
+.RI [ "paths" ]...
+.RS
+Load configuration files and/or directories
+
+The \fB-w\fP option removes the disabled key and writes the configuration files back to the disk
+.RE
+
+.B
+unload 
+.RI [ "-w" ] 
+.RI [ "paths" ]...
+.RS
+Unload configuration files and/or directories
+
+The \fB-w\fP option adds the disabled key and writes the configuration filesback to the disk
+.RE
+
+.B
+start 
+.RI [ "joblabels.." ]
+.RS
+Start job specified by label
+.RE
+
+
+.B
+stop 
+.RI [ "joblabels.." ]
+.RS
+Stop job specified by label
+.RE
+
+.TP
+.B
+list
+Lists the jobs loaded into launchd and information about them
+.P
+
+.B
+setenv 
+.RI [ "key" ]
+.RI [ "value" ]
+.RS
+Set a launchd environment variable. The \fBkey\fP specifies the variable, and \fBvalue\fP is the value of the variable
+.RE
+
+.B
+unsetenv 
+.RI [ "key" ]
+.RS
+Unset a launchd environment variable specified by \fBkey\fP
+.RE
+
+.B
+getenv 
+.RI [ "key" ]
+.RS
+Get a launchd environmental variable
+.RE
+
+.TP
+.B
+export
+Export launchd environment variables. The shell may use these in an eval statement.
+.P
+
+.B
+getrusage 
+.RI [ "self " | " children" ]
+.RS
+View resource usage statistics for launchd or its child processes
+.RE
+
+.B
+log 
+.RI [ "level loglevel" ] 
+.RI [ "only " | " mask loglevels..."]
+.RS
+View or change the logging level syslog(3) mask for launchd. The available log levels are: debug, info, notice, warning, error, critical, alert, 
+and emergency.
+.RE
+
+.B
+limit 
+.RI [ "cpu " | " filesize " | " data " | " stack " | " core " | " rss " | " memlock " | " maxproc " | " maxfiles" ] 
+.RI [ "both " [ "soft " | " hard" ]]
+.RS
+View and adjust launchd resource limits
+
+If no arguments are given, this will utilize getrlimit(2) to retrieve and print all the resource limits set for launchd.
+
+If a resource is specified, the limits for that resource will be shown.
+
+If a value is specified as a third argument, both the hard and soft limits will be set to that value. 
+
+If another value is specified as a fourth argument, it will be set as the hard limit, with the third argument set as the soft limit.
+.RE
+
+.B
+stdout 
+.RI [ "path" ]
+.RS
+Redirect launchd's standard output to the given path
+.RE
+
+.B
+stderr 
+.RI [ "path" ]
+.RS
+Redirect launchd's standard error to the given path
+.RE
+
+.B
+shutdown
+.RS
+Prepares for system shutdown. \fBLaunchd\fP will remove all jobs.
+.RE
+
+.B
+reloadttys
+.RS
+Have launchd reread /etc/ttys again (this option may be deprecated in the future).
+.RE
+
+.B
+umask 
+.RI [ "newmask" ]
+.RS
+View launchd's umask(2), or change it if a new umask is specified in \fBnewmask\fP.
+.RE
+
+.B
+help
+.RS
+Prints the quick usage statement
+.RE
+      
+
+.SH FILES
+
+The \fBlaunchctl\fP executable is:
+
+   /sbin/launchctl
+
+Configuration settings for \fBlaunchctl\fP are stored in either of the following files:
+
+   $HOME/.launchd.conf
+   /etc/launchd.conf
+
+.SH SEE ALSO
+launchd.conf(5), launchd(8)
+
+.SH AUTHOR
+
+This manual page was developed by the InfoWeapons Corporation SolidBSD Documentation Team.
+

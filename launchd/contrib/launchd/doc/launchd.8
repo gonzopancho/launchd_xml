@@ -1,0 +1,115 @@
+.\"
+.TH launchd 8 "July 28, 2006" "launchd"
+
+.SH NAME
+launchd
+
+.SH SYNOPSIS
+.B launchd 
+.RI [ "-dvsx" ] 
+.RI [ "-S session type" ] 
+.RI [ "-U session user" ]
+.RI [ "-- command " [ "args ..." ]]
+
+.SH DESCRIPTION
+
+\fBLaunchd\fP is a system startup program that was first introduced by Apple in Mac OS X 10.4 (Tiger) and ported to SolidBSD by InfoWeapons
+Corporation. The launchd daemon supersedes tasks traditionally performed by cron, mach_init and init. On many Unix and Unix-like systems, init
+runs the startup scripts, maintains the system levels, and launches and kills services. Since init predates some networking support, however,
+network services are not generally run through it.
+
+\fBLaunchd\fP acts as a single control interface for the many programs started automatically by the system. A standard configuration file format 
+is used to determine when to run a given program, specify resource limits and set environment variables.
+
+Using \fBlaunchd\fP also improves system performance since at any given time it only launches daemons that are actually used. Daemons can also 
+self-terminate and, if again needed, can be restarted.
+
+\fBLaunchd\fP may also be run with a command, as in:
+
+.B
+.RS
+launchd 
+.RI [ "-- command "  [ "args ..." ]]
+.RE
+
+This will launch a separate instance of \fBlaunchd\fP. The command run with \fBlaunchd\fP will also be added to the list of jobs launchd 
+maintains.
+
+During bootup, the SolidBSD kernel runs \fBlaunchd\fP as the first process on the system (pid 1) and uses it to launch other essential services. 
+
+.SH OPTIONS
+
+The options for \fBlaunchd\fP are as follows:
+
+.B
+-S 
+.RI [ "session_type" ]
+.RS
+Run \fBlaunchd\fP using the specified session type
+.RE
+
+.B
+-U
+.RI [ "username" ]
+.RS
+Run \fBlaunchd\fP using the specified user
+.RE
+
+.TP
+.B
+-d
+Run \fBlaunchd\fP as a daemon. This option detaches the process from the terminal and, when running \fBlaunchd\fP as pid 1, indicates mounting 
+devfs
+
+.TP
+.B
+-s
+Run \fBlaunchd\fPin single-user mode
+
+.TP
+.B
+-x 
+Run \fBlaunchd\fP in safe-boot mode 
+
+.TP
+.B
+-v 
+Run \fBlaunchd\fP in verbose mode while booting
+
+.TP
+.B
+-h
+Displays the help page
+	
+.SH CONFIGURATION INFORMATION
+
+\fBLaunchd\fP reads configuration data from SolidBase (sqlite3 wrapper)
+
+.SH FILES
+
+The following files are installed for the \fBlaunchd\fP package (these files, however, only serve as fallback in the event SolidBase fails):
+
+.RS
+/sbin/launchd
+.br
+/sbin/launchctl
+.br
+/etc/launchd.conf
+.br
+/etc/launchd/rc_plist/
+.br
+/etc/launchd/scripts/
+.br
+/etc/launchd/system/
+.br
+/etc/launchd/crone/
+.br
+/etc/launchd/user/
+.RE
+
+.SH SEE ALSO
+launchctl(1), launchd.plist(5), solidbase(8)
+
+.SH AUTHOR
+
+This manual page was developed by the InfoWeapons Corporation SolidBSD Documentation Team.

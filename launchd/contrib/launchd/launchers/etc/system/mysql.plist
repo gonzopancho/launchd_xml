@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE plist PUBLIC 
+         "-//Apple Computer//DTD PLIST 1.0//EN" "
+        http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+    <plist version="1.0">
+    <dict>
+        <key>Label</key>
+        <string>com.mysql.Mysql</string>
+        <key>OnDemand</key>
+        <false/>
+        <key>ProgramArguments</key>
+        <array>
+                <string>/usr/local/mysql/bin/mysqld_safe</string>
+        </array>
+        <key>ServiceDescription</key>
+        <string>Mysql 4.1 Database Server</string>
+        <key>UserName</key>
+        <string>mysql</string>
+        <key>WorkingDirectory</key>
+        <string>/usr/local/mysql</string>
+    </dict>
+    </plist>

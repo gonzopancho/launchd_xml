@@ -1,0 +1,91 @@
+LAUNCHD Port to FreeBSD
+ ( this is a work in-progress)
+
+Usage:
+
+LAUNCHD
+
+(1) init replacement
+   - configuration file is /etc/launchd.conf
+     * launchd commands can be preloaded in this file
+     * default contents:
+        load /etc/launchd/system
+        load /etc/launchd/user
+        load /etc/launchd/crone
+
+   - place plist-conformant configuration files in:
+       /etc/launchd/system   - for system daemons
+       /etc/launchd/user     - for userspace daemons
+       /etc/launchd/cron     - for cron-replacement task
+
+     * the subdirectory structure is mainly for the user's convenience
+     * launchd loads the configuration files in the order shown above
+
+    sample plist:
+
+    /etc/launchd/system/sshd.plist
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+    <plist version="1.0">
+    <dict>
+        <key>Label</key>
+        <string>com.infoweapons.launchd.sshd</string>
+        <key>Program</key>
+        <string>/usr/sbin/sshd</string>
+        <key>ProgramArguments</key>
+        <array>
+                <string>/usr/sbin/sshd</string>
+                <string>-D</string>
+        </array>
+        <key>RunAtLoad</key>
+        <true/>
+        <key>Disabled</key>
+        <false/>
+    </dict>
+    </plist>
+
+(2) cron/at/watcherd replacement
+   - default location of configuration files is /etc/launchd/crone
+   - not as configurable as Vixie cron(cannot specify ranges)
+   for sample configuration files, see examples/crone/*
+
+(3) userland launching in place of /etc/rc.d/ scripts
+   - default configuration file is $HOME/.launchd.conf
+   - to-do
+
+
+LAUNCHCTL
+This is the command line interface to launchd. Probably will be replaced by a lingon clone.
+See http://lingon.sourceforge.net.
+
+(1) To control "pid 1" launchd
+  (requires root)
+
+   # launchctl
+   launchd%       <==== this is the launchd prompt
+                   \=== type "help" to see list of available commands
+
+
+(2) To control non-pid 1 launchd
+   * requires that LAUNCHD_SOCKET is set to particular instance of launchd
+
+   e.g.
+       $ launchd -d       => daemon mode
+         * determine unix socket file
+         * the key is the process id
+
+       $ ps -Af | grep launchd
+         6567  ??  Is     0:00.00 launchd -d
+
+       $ setenv LAUNCHD_SOCKET /tmp/launchd-6567.XXXX/sock
+         * XXXX are random characters
+
+       $launchctl
+
+       launchd%            <== launchd prompt
+
+
+
+
+Enjoy!

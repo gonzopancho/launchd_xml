@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>wpa_supplicant</string>
+	<key>Program</key>
+	<string>/usr/sbin/wpa_supplicant</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/sbin/wpa_supplicant</string>
+		<string>-i ndis0</string>
+		<string>-c /etc/wpa_supplicant.conf</string>
+		<string>-D ndis</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>Disabled</key>
+	<true/>
+</dict>
+</plist>
