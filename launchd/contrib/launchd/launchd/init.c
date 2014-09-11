@@ -507,7 +507,7 @@ runcom_callback(void *obj __attribute__((unused)), struct kevent *kev __attribut
 	}
 
 	if (WIFEXITED(status) && WEXITSTATUS(status) == EXIT_SUCCESS) {
-		logwtmp("~", "reboot", "");
+/*		logwtmp("~", "reboot", ""); */
 		return;
 	} else if (WIFSIGNALED(status) && (WTERMSIG(status) == SIGTERM || WTERMSIG(status) == SIGKILL)) {
 		return;
@@ -1009,8 +1009,8 @@ session_reap(session_t s)
 		}       
 		s->se_process = 0;
 		line = s->se_device + sizeof(_PATH_DEV) - 1;
-		if (logout(line))
-			logwtmp(line, "", "");
+/*		if (logout(line)) */
+/*			logwtmp(line, "", ""); */
 		break;
 	}
 }
@@ -1087,7 +1087,7 @@ void death(bool reboot, int howto)
 	static const int death_sigs[2] = { SIGTERM, SIGKILL };
 
 	/* NB: should send a message to the session logger to avoid blocking. */
-	logwtmp("~", "shutdown", "");
+/*	logwtmp("~", "shutdown", ""); */
 
 	TAILQ_FOREACH(sp, &sessions, tqe)
 		kill(sp->se_process, SIGHUP);

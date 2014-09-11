@@ -1,6 +1,6 @@
 #DEBUG=-g3 -ggdb3 
 FLAGS=-Wall -pedantic -std=c99
-CC=gcc
+CC=cc
 all: nodaemon seq netcalc launch_xml 
 netcalc:
 	$(CC) $(FLAGS) $(DEBUG) netcalc.c -o netcalc
